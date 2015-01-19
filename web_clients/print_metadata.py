@@ -9,7 +9,7 @@ def printHeaders(response):
     print 'HTTP version', response.version
     print 'Status code:', response.code
     print 'Status phrase:', response.phrase
-    print 'Response headers'
+    print 'Response headers:'
     for header, value in response.headers.getAllRawHeaders():
         print header, value
 

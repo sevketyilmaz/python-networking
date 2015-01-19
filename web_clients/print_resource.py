@@ -18,11 +18,11 @@ def stop(result):
 
 if __name__ == '__main__':
     if len(sys.argv) != 2:
-        print >>sys.stderr, 'Usage python print_resource.py <URL>'
+        printError('Usage python print_resource.py <URL>')
         sys.exit(1)
 
     url = sys.argv[1]
-    d = getPage(url)
+    d = getPage(url, method='POST')
     d.addCallbacks(printPage, printError)
     d.addBoth(stop)
 

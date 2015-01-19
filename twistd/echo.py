@@ -1,7 +1,6 @@
 from twisted.internet import protocol, reactor
 
 
-
 class EchoProtocol(protocol.Protocol):
 
     def dataReceived(self, data):
