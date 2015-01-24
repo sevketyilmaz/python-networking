@@ -1,6 +1,6 @@
 import sys
 
-from twisted.internet import protocol, reactor
+from twisted.internet import protocol
 from twisted.python import log
 
 
@@ -11,7 +11,7 @@ class EchoProcessProtocol(protocol.ProcessProtocol):
 
     def connectionMade(self):
         log.msg('connectionMade called')
-        reactor.callLater(10, self.terminateProcess)
+        self.reactor.callLater(10, self.terminateProcess)
 
     def terminateProcess(self):
         self.transport.signalProcess('TERM')
@@ -37,6 +37,6 @@ class EchoProcessProtocol(protocol.ProcessProtocol):
     def processEnded(self, reason):
         log.msg('processEnded called with status', reason.value.exitCode)
         log.msg('All File descriptors closed and the process has been reaped')
-        reactor.stop()
+        self.reactor.stop()
 
 log.startLogging(sys.stdout)
