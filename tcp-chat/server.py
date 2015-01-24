@@ -15,7 +15,7 @@ class ChatProtocol(LineReceiver):
     def connectionLost(self):
         if self.name in self.factory.users:
             del self.factory.users[self.name]
-            self.broadcastMessage('{0} has left has the channel.'.format(self.name))
+            self.broadcastMessage('{0} has left the channel.'.format(self.name))
 
     def lineReceived(self, line):
         if self.state == 'REGISTER':
