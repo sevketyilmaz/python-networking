@@ -1,8 +1,8 @@
 from twisted.internet import reactor
-from twisted.enterprise import adapi
+from twisted.enterprise import adbapi
 
 
-dbpool = adapi.ConnectionyPool('sqlite3', 'users.db', check_same_thread=False)
+dbpool = adbapi.ConnectionPool('sqlite3', 'users.db', check_same_thread=False)
 
 
 def getName(email):
