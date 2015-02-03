@@ -14,7 +14,7 @@ class StdOutMessageDelivery:
         self.protocol = protocol
 
     def receivedHeader(self, helo, origin, recipients):
-        client_hostname, _ = helo
+        client_hostname, client_ip = helo
         current_hostname = self.protocol.transport.getHost().host  # train-wreck
         header_value = 'from {client} by {current} with ESMTP ;  {date}'.format(
             client=client_hostname,
