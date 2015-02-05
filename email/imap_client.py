@@ -25,7 +25,11 @@ class IMAP4LocalClient(imap4.IMAP4Client):
         return self.list('', '*').addCallback(self._cbPickMailbox)
 
     def _cbPickMailbox(self, result):
-        mbox = [m for m in result if 'Inbox' in m[2]][0][2]
+        try:
+            mbox = [m for m in result if 'Inbox' in m[2]][0][2]
+        except IndexError:
+            log.err('No emails to show!')
+            return
         return self.select(mbox).addCallback(self._cbExamineMailBox)
 
     def _cbExamineMailBox(self, result):

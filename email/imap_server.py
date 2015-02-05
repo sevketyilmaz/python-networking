@@ -137,6 +137,8 @@ class MailUserRealm:
 
         user_dir = os.path.join(self.baseDir, avatarId)
         avatar = IMAPUserAccount(user_dir, avatarId)
+        if not os.path.exists(user_dir):
+            os.makedirs(user_dir)
         return imap4.IAccount, avatar, lambda: None
 
 
