@@ -1,4 +1,5 @@
 from os.path import expanduser
+import sys
 
 from twisted.conch import avatar, recvline
 from twisted.conch.insults import insults
@@ -6,6 +7,7 @@ from twisted.conch.interfaces import IConchUser, ISession
 from twisted.conch.ssh import factory, keys, session
 from twisted.cred import portal, checkers
 from twisted.internet import reactor
+from twisted.python import log
 from zope.interface import implements
 
 
@@ -13,10 +15,12 @@ class SSHProtocol(recvline.HistoricRecvLine):
 
     def __init__(self, user):
         self.user = user
+        self.username = self.user.username
 
     def connectionMade(self):
         recvline.HistoricRecvLine.connectionMade(self)
-        self.terminal.write('Welcome! {0}'.format(self.user.username))
+        log.msg('{0} logged in'.format(self.username))
+        self.terminal.write('Welcome! {0}'.format(self.username))
         self.terminal.nextLine()
         self.do_help()
         self.show_prompt()
@@ -37,10 +41,13 @@ class SSHProtocol(recvline.HistoricRecvLine):
             if function:
                 try:
                     function(*args)
+                    log.msg('{0} executed command {1}.'.format(self.username, function.func_name))
                 except Exception as e:
+                    log.err('{0} failed to execute command {1}.'.format(self.username, function.func_name))
                     self.terminal.write('Error: {0}'.format(e))
                     self.terminal.nextLine()
             else:
+                log.err('{0} tried to execute a non-existing command.')
                 self.terminal.write('No such command.')
                 self.terminal.nextLine()
         self.show_prompt()
@@ -114,6 +121,7 @@ def get_RSA_keys():
 
 
 if __name__ == '__main__':
+    log.startLogging(sys.stdout)
     factory = factory.SSHFactory()
     factory.portal = portal.Portal(SSHRealm())
 
@@ -121,9 +129,9 @@ if __name__ == '__main__':
     factory.portal.registerChecker(
         checkers.InMemoryUsernamePasswordDatabaseDontUse(**users))
 
-    pubKey, privKey = get_RSA_keys()
-    factory.publicKeys = {'ssh-rsa': pubKey}
-    factory.privateKeys = {'ssh-rsa': privKey}
+    public_key, private_key = get_RSA_keys()
+    factory.publicKeys = {'ssh-rsa': public_key}
+    factory.privateKeys = {'ssh-rsa': private_key}
 
     reactor.listenTCP(2222, factory)
     reactor.run()
